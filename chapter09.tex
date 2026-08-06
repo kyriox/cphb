@@ -1,23 +1,23 @@
-\chapter{Range queries}
+\chapter{Consultas de rango}
 
-\index{range query}
-\index{sum query}
-\index{minimum query}
-\index{maximum query}
+\index{consulta de rango}
+\index{consulta de suma}
+\index{consulta de mínimo}
+\index{consulta de máximo}
 
-In this chapter, we discuss data structures
-that allow us to efficiently process range queries.
-In a \key{range query},
-our task is to calculate a value
-based on a subarray of an array.
-Typical range queries are:
+En este capítulo, discutimos estructuras de datos
+que nos permiten procesar de forma eficiente consultas de rango.
+En una \key{consulta de rango},
+nuestra tarea es calcular un valor
+basado en un subarreglo de un arreglo.
+Las consultas de rango típicas son:
 \begin{itemize}
-\item $\texttt{sum}_q(a,b)$: calculate the sum of values in range $[a,b]$
-\item $\texttt{min}_q(a,b)$: find the minimum value in range $[a,b]$
-\item $\texttt{max}_q(a,b)$: find the maximum value in range $[a,b]$
+\item $\texttt{sum}_q(a,b)$: calcular la suma de los valores en el rango $[a,b]$
+\item $\texttt{min}_q(a,b)$: encontrar el valor mínimo en el rango $[a,b]$
+\item $\texttt{max}_q(a,b)$: encontrar el valor máximo en el rango $[a,b]$
 \end{itemize}
 
-For example, consider the range $[3,6]$ in the following array:
+Por ejemplo, considera el rango $[3,6]$ en el siguiente arreglo:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \fill[color=lightgray] (3,0) rectangle (7,1);
@@ -43,13 +43,13 @@ For example, consider the range $[3,6]$ in the following array:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-In this case, $\texttt{sum}_q(3,6)=14$,
-$\texttt{min}_q(3,6)=1$ and $\texttt{max}_q(3,6)=6$.
+En este caso, $\texttt{sum}_q(3,6)=14$,
+$\texttt{min}_q(3,6)=1$ y $\texttt{max}_q(3,6)=6$.
 
-A simple way to process range queries is to use
-a loop that goes through all array values in the range.
-For example, the following function can be
-used to process sum queries on an array:
+Una forma simple de procesar consultas de rango es usar
+un bucle que recorra todos los valores del arreglo en el rango.
+Por ejemplo, la siguiente función puede
+usarse para procesar consultas de suma en un arreglo:
 
 \begin{lstlisting}
 int sum(int a, int b) {
@@ -61,36 +61,36 @@ int sum(int a, int b) {
 }
 \end{lstlisting}
 
-This function works in $O(n)$ time,
-where $n$ is the size of the array.
-Thus, we can process $q$ queries in $O(nq)$
-time using the function.
-However, if both $n$ and $q$ are large, this approach
-is slow. Fortunately, it turns out that there are
-ways to process range queries much more efficiently.
+Esta función funciona en tiempo $O(n)$,
+donde $n$ es el tamaño del arreglo.
+Así, podemos procesar $q$ consultas en tiempo $O(nq)$
+usando la función.
+Sin embargo, si tanto $n$ como $q$ son grandes, este enfoque
+es lento. Afortunadamente, resulta que hay
+formas de procesar consultas de rango mucho más eficientemente.
 
-\section{Static array queries}
+\section{Consultas en un arreglo estático}
 
-We first focus on a situation where
-the array is \emph{static}, i.e.,
-the array values are never updated between the queries.
-In this case, it suffices to construct
-a static data structure that tells us
-the answer for any possible query.
+Primero nos centramos en una situación donde
+el arreglo es \emph{estático}, es decir,
+los valores del arreglo nunca se actualizan entre las consultas.
+En este caso, basta con construir
+una estructura de datos estática que nos diga
+la respuesta para cualquier consulta posible.
 
-\subsubsection{Sum queries}
+\subsubsection{Consultas de suma}
 
-\index{prefix sum array}
+\index{arreglo de sumas de prefijos}
 
-We can easily process
-sum queries on a static array
-by constructing a \key{prefix sum array}.
-Each value in the prefix sum array equals
-the sum of values in the original array up to that position,
-i.e., the value at position $k$ is $\texttt{sum}_q(0,k)$.
-The prefix sum array can be constructed in $O(n)$ time.
+Podemos procesar fácilmente
+consultas de suma en un arreglo estático
+construyendo un \key{arreglo de sumas de prefijos}.
+Cada valor del arreglo de sumas de prefijos es igual
+a la suma de los valores del arreglo original hasta esa posición,
+es decir, el valor en la posición $k$ es $\texttt{sum}_q(0,k)$.
+El arreglo de sumas de prefijos puede construirse en tiempo $O(n)$.
 
-For example, consider the following array:
+Por ejemplo, considera el siguiente arreglo:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 %\fill[color=lightgray] (3,0) rectangle (7,1);
@@ -116,7 +116,7 @@ For example, consider the following array:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-The corresponding prefix sum array is as follows:
+El arreglo de sumas de prefijos correspondiente es el siguiente:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 %\fill[color=lightgray] (3,0) rectangle (7,1);
@@ -143,15 +143,15 @@ The corresponding prefix sum array is as follows:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-Since the prefix sum array contains all values
-of $\texttt{sum}_q(0,k)$,
-we can calculate any value of
-$\texttt{sum}_q(a,b)$ in $O(1)$ time as follows:
+Como el arreglo de sumas de prefijos contiene todos los valores
+de $\texttt{sum}_q(0,k)$,
+podemos calcular cualquier valor de
+$\texttt{sum}_q(a,b)$ en tiempo $O(1)$ de la siguiente manera:
 \[ \texttt{sum}_q(a,b) = \texttt{sum}_q(0,b) - \texttt{sum}_q(0,a-1)\]
-By defining $\texttt{sum}_q(0,-1)=0$,
-the above formula also holds when $a=0$.
+Definiendo $\texttt{sum}_q(0,-1)=0$,
+la fórmula anterior también se cumple cuando $a=0$.
 
-For example, consider the range $[3,6]$:
+Por ejemplo, considera el rango $[3,6]$:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \fill[color=lightgray] (3,0) rectangle (7,1);
@@ -177,9 +177,9 @@ For example, consider the range $[3,6]$:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-In this case $\texttt{sum}_q(3,6)=8+6+1+4=19$.
-This sum can be calculated from
-two values of the prefix sum array:
+En este caso $\texttt{sum}_q(3,6)=8+6+1+4=19$.
+Esta suma puede calcularse a partir de
+dos valores del arreglo de sumas de prefijos:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \fill[color=lightgray] (2,0) rectangle (3,1);
@@ -206,19 +206,19 @@ two values of the prefix sum array:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-Thus, $\texttt{sum}_q(3,6)=\texttt{sum}_q(0,6)-\texttt{sum}_q(0,2)=27-8=19$.
+Así, $\texttt{sum}_q(3,6)=\texttt{sum}_q(0,6)-\texttt{sum}_q(0,2)=27-8=19$.
 
-It is also possible to generalize this idea
-to higher dimensions.
-For example, we can construct a two-dimensional
-prefix sum array that can be used to calculate
-the sum of any rectangular subarray in $O(1)$ time.
-Each sum in such an array corresponds to
-a subarray
-that begins at the upper-left corner of the array.
+También es posible generalizar esta idea
+a dimensiones más altas.
+Por ejemplo, podemos construir un arreglo bidimensional
+de sumas de prefijos que puede usarse para calcular
+la suma de cualquier subarreglo rectangular en tiempo $O(1)$.
+Cada suma en tal arreglo corresponde a
+un subarreglo
+que comienza en la esquina superior izquierda del arreglo.
 
 \begin{samepage}
-The following picture illustrates the idea:
+La siguiente figura ilustra la idea:
 \begin{center}
 \begin{tikzpicture}[scale=0.54]
 \draw[fill=lightgray] (3,2) rectangle (7,5);
@@ -231,37 +231,37 @@ The following picture illustrates the idea:
 \end{center}
 \end{samepage}
 
-The sum of the gray subarray can be calculated
-using the formula
+La suma del subarreglo gris puede calcularse
+usando la fórmula
 \[S(A) - S(B) - S(C) + S(D),\]
-where $S(X)$ denotes the sum of values
-in a rectangular
-subarray from the upper-left corner
-to the position of $X$.
+donde $S(X)$ denota la suma de los valores
+en un subarreglo rectangular
+desde la esquina superior izquierda
+hasta la posición de $X$.
 
-\subsubsection{Minimum queries}
+\subsubsection{Consultas de mínimo}
 
-\index{sparse table}
+\index{tabla dispersa}
 
-Minimum queries are more difficult to process
-than sum queries.
-Still, there is a quite simple 
-$O(n \log n)$ time preprocessing
-method after which we can answer any minimum
-query in $O(1)$ time\footnote{This technique
-was introduced in \cite{ben00} and sometimes
-called the \key{sparse table} method.
-There are also more sophisticated techniques \cite{fis06} where
-the preprocessing time is only $O(n)$, but such algorithms
-are not needed in competitive programming.}.
-Note that since minimum and maximum queries can
-be processed similarly,
-we can focus on minimum queries.
+Las consultas de mínimo son más difíciles de procesar
+que las consultas de suma.
+Aun así, hay un método de preprocesamiento
+bastante simple de tiempo $O(n \log n)$
+después del cual podemos responder cualquier consulta
+de mínimo en tiempo $O(1)$\footnote{Esta técnica
+se presentó en \cite{ben00} y a veces se
+llama el método de la \key{tabla dispersa} (sparse table).
+También hay técnicas más sofisticadas \cite{fis06} donde
+el tiempo de preprocesamiento es solo $O(n)$, pero tales algoritmos
+no se necesitan en la programación competitiva.}.
+Nota que como las consultas de mínimo y máximo pueden
+procesarse de forma similar,
+podemos centrarnos en las consultas de mínimo.
 
-The idea is to precalculate all values of
-$\textrm{min}_q(a,b)$ where
-$b-a+1$ (the length of the range) is a power of two.
-For example, for the array
+La idea es precalcular todos los valores de
+$\textrm{min}_q(a,b)$ donde
+$b-a+1$ (la longitud del rango) es una potencia de dos.
+Por ejemplo, para el arreglo
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -287,7 +287,7 @@ For example, for the array
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-the following values are calculated:
+se calculan los siguientes valores:
 
 \begin{center}
 \begin{tabular}{ccc}
@@ -338,24 +338,24 @@ $a$ & $b$ & $\texttt{min}_q(a,b)$ \\
 \end{tabular}
 \end{center}
 
-The number of precalculated values is $O(n \log n)$,
-because there are $O(\log n)$ range lengths
-that are powers of two.
-The values can be calculated efficiently
-using the recursive formula
+El número de valores precalculados es $O(n \log n)$,
+porque hay $O(\log n)$ longitudes de rango
+que son potencias de dos.
+Los valores pueden calcularse de forma eficiente
+usando la fórmula recursiva
 \[\texttt{min}_q(a,b) = \min(\texttt{min}_q(a,a+w-1),\texttt{min}_q(a+w,b)),\]
-where $b-a+1$ is a power of two and $w=(b-a+1)/2$.
-Calculating all those values takes $O(n \log n)$ time.
+donde $b-a+1$ es una potencia de dos y $w=(b-a+1)/2$.
+Calcular todos esos valores toma $O(n \log n)$ de tiempo.
 
-After this, any value of $\texttt{min}_q(a,b)$ can be calculated
-in $O(1)$ time as a minimum of two precalculated values.
-Let $k$ be the largest power of two that does not exceed $b-a+1$.
-We can calculate the value of $\texttt{min}_q(a,b)$ using the formula
+Después de esto, cualquier valor de $\texttt{min}_q(a,b)$ puede calcularse
+en tiempo $O(1)$ como el mínimo de dos valores precalculados.
+Sea $k$ la mayor potencia de dos que no excede $b-a+1$.
+Podemos calcular el valor de $\texttt{min}_q(a,b)$ usando la fórmula
 \[\texttt{min}_q(a,b) = \min(\texttt{min}_q(a,a+k-1),\texttt{min}_q(b-k+1,b)).\]
-In the above formula, the range $[a,b]$ is represented
-as the union of the ranges $[a,a+k-1]$ and $[b-k+1,b]$, both of length $k$.
+En la fórmula anterior, el rango $[a,b]$ se representa
+como la unión de los rangos $[a,a+k-1]$ y $[b-k+1,b]$, ambos de longitud $k$.
 
-As an example, consider the range $[1,6]$:
+Como ejemplo, considera el rango $[1,6]$:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \fill[color=lightgray] (1,0) rectangle (7,1);
@@ -381,11 +381,11 @@ As an example, consider the range $[1,6]$:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-The length of the range is 6,
-and the largest power of two that does
-not exceed 6 is 4.
-Thus the range $[1,6]$ is
-the union of the ranges $[1,4]$ and $[3,6]$:
+La longitud del rango es 6,
+y la mayor potencia de dos que no
+excede 6 es 4.
+Así, el rango $[1,6]$ es
+la unión de los rangos $[1,4]$ y $[3,6]$:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \fill[color=lightgray] (1,0) rectangle (5,1);
@@ -437,46 +437,46 @@ the union of the ranges $[1,4]$ and $[3,6]$:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-Since $\texttt{min}_q(1,4)=3$ and $\texttt{min}_q(3,6)=1$,
-we conclude that $\texttt{min}_q(1,6)=1$.
+Como $\texttt{min}_q(1,4)=3$ y $\texttt{min}_q(3,6)=1$,
+concluimos que $\texttt{min}_q(1,6)=1$.
 
-\section{Binary indexed tree}
+\section{Árbol indexado binario}
 
-\index{binary indexed tree}
-\index{Fenwick tree}
+\index{árbol indexado binario}
+\index{árbol de Fenwick}
 
-A \key{binary indexed tree} or a \key{Fenwick tree}\footnote{The
-binary indexed tree structure was presented by P. M. Fenwick in 1994 \cite{fen94}.}
-can be seen as a dynamic variant of a prefix sum array.
-It supports two $O(\log n)$ time operations on an array:
-processing a range sum query and updating a value.
+Un \key{árbol indexado binario} o \key{árbol de Fenwick}\footnote{La
+estructura del árbol indexado binario fue presentada por P. M. Fenwick en 1994 \cite{fen94}.}
+puede verse como una variante dinámica de un arreglo de sumas de prefijos.
+Admite dos operaciones de tiempo $O(\log n)$ sobre un arreglo:
+procesar una consulta de suma de rango y actualizar un valor.
 
-The advantage of a binary indexed tree is
-that it allows us to efficiently update
-array values between sum queries.
-This would not be possible using a prefix sum array,
-because after each update, it would be necessary to build the
-whole prefix sum array again in $O(n)$ time.
+La ventaja de un árbol indexado binario es
+que nos permite actualizar de forma eficiente
+los valores del arreglo entre consultas de suma.
+Esto no sería posible usando un arreglo de sumas de prefijos,
+porque después de cada actualización, sería necesario construir de nuevo
+todo el arreglo de sumas de prefijos en tiempo $O(n)$.
 
-\subsubsection{Structure}
+\subsubsection{Estructura}
 
-Even if the name of the structure is a binary indexed \emph{tree},
-it is usually represented as an array.
-In this section we assume that all arrays are one-indexed,
-because it makes the implementation easier.
+Aunque el nombre de la estructura es \emph{árbol} indexado binario,
+normalmente se representa como un arreglo.
+En esta sección suponemos que todos los arreglos están indexados desde 1,
+porque hace la implementación más fácil.
 
-Let $p(k)$ denote the largest power of two that
-divides $k$.
-We store a binary indexed tree as an array \texttt{tree}
-such that
+Sea $p(k)$ la mayor potencia de dos que
+divide a $k$.
+Almacenamos un árbol indexado binario como un arreglo \texttt{tree}
+tal que
 \[ \texttt{tree}[k] = \texttt{sum}_q(k-p(k)+1,k),\]
-i.e., each position $k$ contains the sum of values
-in a range of the original array whose length is $p(k)$
-and that ends at position $k$.
-For example, since $p(6)=2$, $\texttt{tree}[6]$
-contains the value of $\texttt{sum}_q(5,6)$.
+es decir, cada posición $k$ contiene la suma de los valores
+en un rango del arreglo original cuya longitud es $p(k)$
+y que termina en la posición $k$.
+Por ejemplo, como $p(6)=2$, $\texttt{tree}[6]$
+contiene el valor de $\texttt{sum}_q(5,6)$.
 
-For example, consider the following array:
+Por ejemplo, considera el siguiente arreglo:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -502,7 +502,7 @@ For example, consider the following array:
 \end{tikzpicture}
 \end{center}
 
-The corresponding binary indexed tree is as follows:
+El árbol indexado binario correspondiente es el siguiente:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -528,9 +528,9 @@ The corresponding binary indexed tree is as follows:
 \end{tikzpicture}
 \end{center}
 
-The following picture shows more clearly
-how each value in the binary indexed tree
-corresponds to a range in the original array:
+La siguiente figura muestra más claramente
+cómo cada valor del árbol indexado binario
+corresponde a un rango del arreglo original:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -575,14 +575,14 @@ corresponds to a range in the original array:
 \end{tikzpicture}
 \end{center}
 
-Using a binary indexed tree,
-any value of $\texttt{sum}_q(1,k)$
-can be calculated in $O(\log n)$ time,
-because a range $[1,k]$ can always be divided into
-$O(\log n)$ ranges whose sums are stored in the tree.
+Usando un árbol indexado binario,
+cualquier valor de $\texttt{sum}_q(1,k)$
+puede calcularse en tiempo $O(\log n)$,
+porque un rango $[1,k]$ siempre puede dividirse en
+$O(\log n)$ rangos cuyas sumas están almacenadas en el árbol.
 
-For example, the range $[1,7]$ consists of
-the following ranges:
+Por ejemplo, el rango $[1,7]$ consta de
+los siguientes rangos:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -625,21 +625,20 @@ the following ranges:
 \draw (0,-4) -- (8,-4) -- (8,-4.5) -- (0,-4.5) -- (0,-4);
 \end{tikzpicture}
 \end{center}
-Thus, we can calculate the corresponding sum as follows:
+Así, podemos calcular la suma correspondiente de la siguiente manera:
 \[\texttt{sum}_q(1,7)=\texttt{sum}_q(1,4)+\texttt{sum}_q(5,6)+\texttt{sum}_q(7,7)=16+7+4=27\]
 
-To calculate the value of $\texttt{sum}_q(a,b)$ where $a>1$,
-we can use the same trick that we used with prefix sum arrays:
+Para calcular el valor de $\texttt{sum}_q(a,b)$ donde $a>1$,
+podemos usar el mismo truco que usamos con los arreglos de sumas de prefijos:
 \[ \texttt{sum}_q(a,b) = \texttt{sum}_q(1,b) - \texttt{sum}_q(1,a-1).\]
-Since we can calculate both $\texttt{sum}_q(1,b)$
-and $\texttt{sum}_q(1,a-1)$ in $O(\log n)$ time,
-the total time complexity is $O(\log n)$.
+Como podemos calcular tanto $\texttt{sum}_q(1,b)$
+como $\texttt{sum}_q(1,a-1)$ en tiempo $O(\log n)$,
+la complejidad temporal total es $O(\log n)$.
 
-Then, after updating a value in the original array,
-several values in the binary indexed tree
-should be updated.
-For example, if the value at position 3 changes,
-the sums of the following ranges change:
+Luego, después de actualizar un valor en el arreglo original,
+deberían actualizarse varios valores en el árbol indexado binario.
+Por ejemplo, si el valor en la posición 3 cambia,
+las sumas de los siguientes rangos cambian:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -683,19 +682,19 @@ the sums of the following ranges change:
 \end{tikzpicture}
 \end{center}
 
-Since each array element belongs to $O(\log n)$
-ranges in the binary indexed tree,
-it suffices to update $O(\log n)$ values in the tree.
+Como cada elemento del arreglo pertenece a $O(\log n)$
+rangos en el árbol indexado binario,
+basta con actualizar $O(\log n)$ valores en el árbol.
 
-\subsubsection{Implementation}
+\subsubsection{Implementación}
 
-The operations of a binary indexed tree can be
-efficiently implemented using bit operations.
-The key fact needed is that we can
-calculate any value of $p(k)$ using the formula
+Las operaciones de un árbol indexado binario pueden
+implementarse de forma eficiente usando operaciones de bits.
+El hecho clave que se necesita es que podemos
+calcular cualquier valor de $p(k)$ usando la fórmula
 \[p(k) = k \& -k.\]
 
-The following function calculates the value of $\texttt{sum}_q(1,k)$:
+La siguiente función calcula el valor de $\texttt{sum}_q(1,k)$:
 \begin{lstlisting}
 int sum(int k) {
     int s = 0;
@@ -707,9 +706,9 @@ int sum(int k) {
 }
 \end{lstlisting}
 
-The following function increases the
-array value at position $k$ by $x$
-($x$ can be positive or negative):
+La siguiente función incrementa el
+valor del arreglo en la posición $k$ en $x$
+($x$ puede ser positivo o negativo):
 \begin{lstlisting}
 void add(int k, int x) {
     while (k <= n) {
@@ -719,53 +718,53 @@ void add(int k, int x) {
 }
 \end{lstlisting}
 
-The time complexity of both the functions is
-$O(\log n)$, because the functions access $O(\log n)$
-values in the binary indexed tree, and each move
-to the next position takes $O(1)$ time.
+La complejidad temporal de ambas funciones es
+$O(\log n)$, porque las funciones acceden a $O(\log n)$
+valores en el árbol indexado binario, y cada movimiento
+a la siguiente posición toma $O(1)$ de tiempo.
 
-\section{Segment tree}
+\section{Árbol de segmentos}
 
-\index{segment tree}
+\index{árbol de segmentos}
 
-A \key{segment tree}\footnote{The bottom-up-implementation in this chapter corresponds to
-that in \cite{sta06}. Similar structures were used
-in late 1970's to solve geometric problems \cite{ben80}.} is a data structure
-that supports two operations:
-processing a range query and
-updating an array value.
-Segment trees can support
-sum queries, minimum and maximum queries and many other
-queries so that both operations work in $O(\log n)$ time.
+Un \key{árbol de segmentos}\footnote{La implementación de abajo hacia arriba de este capítulo corresponde a
+la de \cite{sta06}. Estructuras similares se usaron
+a finales de los años 70 para resolver problemas geométricos \cite{ben80}.} es una estructura de datos
+que admite dos operaciones:
+procesar una consulta de rango y
+actualizar un valor del arreglo.
+Los árboles de segmentos pueden admitir
+consultas de suma, consultas de mínimo y máximo y muchas otras
+consultas de modo que ambas operaciones funcionen en tiempo $O(\log n)$.
 
-Compared to a binary indexed tree,
-the advantage of a segment tree is that it is
-a more general data structure.
-While binary indexed trees only support
-sum queries\footnote{In fact, using \emph{two} binary
-indexed trees it is possible to support minimum queries \cite{dim15},
-but this is more complicated than to use a segment tree.},
-segment trees also support other queries.
-On the other hand, a segment tree requires more
-memory and is a bit more difficult to implement.
+Comparado con un árbol indexado binario,
+la ventaja de un árbol de segmentos es que es
+una estructura de datos más general.
+Mientras que los árboles indexados binarios solo admiten
+consultas de suma\footnote{De hecho, usando \emph{dos} árboles
+indexados binarios es posible admitir consultas de mínimo \cite{dim15},
+pero esto es más complicado que usar un árbol de segmentos.},
+los árboles de segmentos también admiten otras consultas.
+Por otro lado, un árbol de segmentos requiere más
+memoria y es un poco más difícil de implementar.
 
-\subsubsection{Structure}
+\subsubsection{Estructura}
 
-A segment tree is a binary tree
-such that the nodes on the bottom level of the tree
-correspond to the array elements,
-and the other nodes
-contain information needed for processing range queries.
+Un árbol de segmentos es un árbol binario
+tal que los nodos del nivel inferior del árbol
+corresponden a los elementos del arreglo,
+y los otros nodos
+contienen información necesaria para procesar consultas de rango.
 
-In this section, we assume that the size
-of the array is a power of two and zero-based
-indexing is used, because it is convenient to build
-a segment tree for such an array.
-If the size of the array is not a power of two,
-we can always append extra elements to it.
+En esta sección, suponemos que el tamaño
+del arreglo es una potencia de dos y se usa indexación
+desde cero, porque es conveniente construir
+un árbol de segmentos para tal arreglo.
+Si el tamaño del arreglo no es una potencia de dos,
+siempre podemos agregarle elementos adicionales.
 
-We will first discuss segment trees that support sum queries.
-As an example, consider the following array:
+Primero discutiremos árboles de segmentos que admiten consultas de suma.
+Como ejemplo, considera el siguiente arreglo:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -790,7 +789,7 @@ As an example, consider the following array:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-The corresponding segment tree is as follows:
+El árbol de segmentos correspondiente es el siguiente:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -830,18 +829,18 @@ The corresponding segment tree is as follows:
 \end{tikzpicture}
 \end{center}
 
-Each internal tree node
-corresponds to an array range
-whose size is a power of two.
-In the above tree, the value of each internal
-node is the sum of the corresponding array values,
-and it can be calculated as the sum of
-the values of its left and right child node.
+Cada nodo interno del árbol
+corresponde a un rango del arreglo
+cuyo tamaño es una potencia de dos.
+En el árbol anterior, el valor de cada nodo
+interno es la suma de los valores correspondientes del arreglo,
+y puede calcularse como la suma de
+los valores de sus nodos hijos izquierdo y derecho.
 
-It turns out that any range $[a,b]$
-can be divided into $O(\log n)$ ranges
-whose values are stored in tree nodes.
-For example, consider the range [2,7]:
+Resulta que cualquier rango $[a,b]$
+puede dividirse en $O(\log n)$ rangos
+cuyos valores están almacenados en nodos del árbol.
+Por ejemplo, considera el rango [2,7]:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \fill[color=gray!50] (2,0) rectangle (8,1);
@@ -867,9 +866,9 @@ For example, consider the range [2,7]:
 \node at (7.5,1.4) {$7$};
 \end{tikzpicture}
 \end{center}
-Here $\texttt{sum}_q(2,7)=6+3+2+7+2+6=26$.
-In this case, the following two tree nodes
-correspond to the range:
+Aquí $\texttt{sum}_q(2,7)=6+3+2+7+2+6=26$.
+En este caso, los siguientes dos nodos del árbol
+corresponden al rango:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -908,24 +907,24 @@ correspond to the range:
 \path[draw,thick,-] (m) -- (j);
 \end{tikzpicture}
 \end{center}
-Thus, another way to calculate the sum is $9+17=26$.
+Así, otra forma de calcular la suma es $9+17=26$.
 
-When the sum is calculated using nodes
-located as high as possible in the tree,
-at most two nodes on each level
-of the tree are needed.
-Hence, the total number of nodes
-is $O(\log n)$.
+Cuando la suma se calcula usando nodos
+ubicados lo más alto posible en el árbol,
+se necesitan a lo sumo dos nodos en cada nivel
+del árbol.
+Por lo tanto, el número total de nodos
+es $O(\log n)$.
 
-After an array update,
-we should update all nodes
-whose value depends on the updated value.
-This can be done by traversing the path
-from the updated array element to the top node
-and updating the nodes along the path.
+Después de una actualización del arreglo,
+deberíamos actualizar todos los nodos
+cuyo valor dependa del valor actualizado.
+Esto puede hacerse recorriendo el camino
+desde el elemento actualizado del arreglo hasta el nodo superior
+y actualizando los nodos a lo largo del camino.
 
-The following picture shows which tree nodes
-change if the array value 7 changes:
+La siguiente figura muestra qué nodos del árbol
+cambian si el valor 7 del arreglo cambia:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -967,25 +966,25 @@ change if the array value 7 changes:
 \end{tikzpicture}
 \end{center}
 
-The path from bottom to top
-always consists of $O(\log n)$ nodes,
-so each update changes $O(\log n)$ nodes in the tree.
+El camino de abajo hacia arriba
+siempre consta de $O(\log n)$ nodos,
+así que cada actualización cambia $O(\log n)$ nodos en el árbol.
 
-\subsubsection{Implementation}
+\subsubsection{Implementación}
 
-We store a segment tree as an array
-of $2n$ elements where $n$ is the size of
-the original array and a power of two.
-The tree nodes are stored from top to bottom:
-$\texttt{tree}[1]$ is the top node,
-$\texttt{tree}[2]$ and $\texttt{tree}[3]$
-are its children, and so on.
-Finally, the values from $\texttt{tree}[n]$
-to $\texttt{tree}[2n-1]$ correspond to
-the values of the original array
-on the bottom level of the tree.
+Almacenamos un árbol de segmentos como un arreglo
+de $2n$ elementos donde $n$ es el tamaño del
+arreglo original y una potencia de dos.
+Los nodos del árbol se almacenan de arriba hacia abajo:
+$\texttt{tree}[1]$ es el nodo superior,
+$\texttt{tree}[2]$ y $\texttt{tree}[3]$
+son sus hijos, y así sucesivamente.
+Finalmente, los valores desde $\texttt{tree}[n]$
+hasta $\texttt{tree}[2n-1]$ corresponden a
+los valores del arreglo original
+en el nivel inferior del árbol.
 
-For example, the segment tree
+Por ejemplo, el árbol de segmentos
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -1024,7 +1023,7 @@ For example, the segment tree
 \path[draw,thick,-] (m) -- (j);
 \end{tikzpicture}
 \end{center}
-is stored as follows:
+se almacena de la siguiente manera:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (15,1);
@@ -1063,16 +1062,16 @@ is stored as follows:
 \node at (14.5,1.4) {$15$};
 \end{tikzpicture}
 \end{center}
-Using this representation,
-the parent of $\texttt{tree}[k]$
-is $\texttt{tree}[\lfloor k/2 \rfloor]$,
-and its children are $\texttt{tree}[2k]$
-and $\texttt{tree}[2k+1]$.
-Note that this implies that the position of a node
-is even if it is a left child and odd if it is a right child.
+Usando esta representación,
+el padre de $\texttt{tree}[k]$
+es $\texttt{tree}[\lfloor k/2 \rfloor]$,
+y sus hijos son $\texttt{tree}[2k]$
+y $\texttt{tree}[2k+1]$.
+Nota que esto implica que la posición de un nodo
+es par si es un hijo izquierdo e impar si es un hijo derecho.
 
-The following function
-calculates the value of $\texttt{sum}_q(a,b)$:
+La siguiente función
+calcula el valor de $\texttt{sum}_q(a,b)$:
 \begin{lstlisting}
 int sum(int a, int b) {
     a += n; b += n;
@@ -1085,15 +1084,15 @@ int sum(int a, int b) {
     return s;
 }
 \end{lstlisting}
-The function maintains a range
-that is initially $[a+n,b+n]$.
-Then, at each step, the range is moved
-one level higher in the tree,
-and before that, the values of the nodes that do not
-belong to the higher range are added to the sum.
+La función mantiene un rango
+que inicialmente es $[a+n,b+n]$.
+Luego, en cada paso, el rango se mueve
+un nivel más arriba en el árbol,
+y antes de eso, los valores de los nodos que no
+pertenecen al rango superior se suman a la suma.
 
-The following function increases the array value
-at position $k$ by $x$:
+La siguiente función incrementa el valor del arreglo
+en la posición $k$ en $x$:
 \begin{lstlisting}
 void add(int k, int x) {
     k += n;
@@ -1103,30 +1102,30 @@ void add(int k, int x) {
     }
 }
 \end{lstlisting}
-First the function updates the value
-at the bottom level of the tree.
-After this, the function updates the values of all
-internal tree nodes, until it reaches
-the top node of the tree.
+Primero la función actualiza el valor
+en el nivel inferior del árbol.
+Después de esto, la función actualiza los valores de todos
+los nodos internos del árbol, hasta que llega
+al nodo superior del árbol.
 
-Both the above functions work
-in $O(\log n)$ time, because a segment tree
-of $n$ elements consists of $O(\log n)$ levels,
-and the functions move one level higher
-in the tree at each step.
+Ambas funciones anteriores funcionan
+en tiempo $O(\log n)$, porque un árbol de segmentos
+de $n$ elementos consta de $O(\log n)$ niveles,
+y las funciones se mueven un nivel más arriba
+en el árbol en cada paso.
 
-\subsubsection{Other queries}
+\subsubsection{Otras consultas}
 
-Segment trees can support all range queries
-where it is possible to divide a range into two parts,
-calculate the answer separately for both parts
-and then efficiently combine the answers.
-Examples of such queries are
-minimum and maximum, greatest common divisor,
-and bit operations and, or and xor.
+Los árboles de segmentos pueden admitir todas las consultas de rango
+donde es posible dividir un rango en dos partes,
+calcular la respuesta por separado para ambas partes
+y luego combinar de forma eficiente las respuestas.
+Ejemplos de tales consultas son
+el mínimo y el máximo, el máximo común divisor,
+y las operaciones de bits and, or y xor.
 
-For example, the following segment tree
-supports minimum queries:
+Por ejemplo, el siguiente árbol de segmentos
+admite consultas de mínimo:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -1167,23 +1166,23 @@ supports minimum queries:
 \end{tikzpicture}
 \end{center}
 
-In this case, every tree node contains
-the smallest value in the corresponding
-array range.
-The top node of the tree contains the smallest
-value in the whole array.
-The operations can be implemented like previously,
-but instead of sums, minima are calculated.
+En este caso, cada nodo del árbol contiene
+el valor más pequeño del rango correspondiente
+del arreglo.
+El nodo superior del árbol contiene el valor más pequeño
+de todo el arreglo.
+Las operaciones pueden implementarse como antes,
+pero en lugar de sumas, se calculan mínimos.
 
-The structure of a segment tree also allows us
-to use binary search for locating array elements.
-For example, if the tree supports minimum queries,
-we can find the position of an element
-with the smallest value in $O(\log n)$ time.
+La estructura de un árbol de segmentos también nos permite
+usar búsqueda binaria para localizar elementos del arreglo.
+Por ejemplo, si el árbol admite consultas de mínimo,
+podemos encontrar la posición de un elemento
+con el valor más pequeño en tiempo $O(\log n)$.
 
-For example, in the above tree, an
-element with the smallest value 1 can be found
-by traversing a path downwards from the top node:
+Por ejemplo, en el árbol anterior, un
+elemento con el valor más pequeño 1 puede encontrarse
+recorriendo un camino hacia abajo desde el nodo superior:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -1228,39 +1227,39 @@ by traversing a path downwards from the top node:
 \end{tikzpicture}
 \end{center}
 
-\section{Additional techniques}
+\section{Técnicas adicionales}
 
-\subsubsection{Index compression}
+\subsubsection{Compresión de índices}
 
-A limitation in data structures that
-are built upon an array is that
-the elements are indexed using
-consecutive integers.
-Difficulties arise when large indices
-are needed.
-For example, if we wish to use the index $10^9$,
-the array should contain $10^9$
-elements which would require too much memory.
+Una limitación en las estructuras de datos que
+se construyen sobre un arreglo es que
+los elementos se indexan usando
+enteros consecutivos.
+Surgen dificultades cuando se necesitan
+índices grandes.
+Por ejemplo, si deseamos usar el índice $10^9$,
+el arreglo debería contener $10^9$
+elementos, lo que requeriría demasiada memoria.
 
-\index{index compression}
+\index{compresión de índices}
 
-However, we can often bypass this limitation
-by using \key{index compression},
-where the original indices are replaced
-with indices $1,2,3,$ etc.
-This can be done if we know all the indices
-needed during the algorithm beforehand.
+Sin embargo, a menudo podemos sortear esta limitación
+usando \key{compresión de índices},
+donde los índices originales se reemplazan
+con los índices $1,2,3,$ etc.
+Esto puede hacerse si conocemos de antemano todos los índices
+necesarios durante el algoritmo.
 
-The idea is to replace each original index $x$
-with $c(x)$ where $c$ is a function that
-compresses the indices.
-We require that the order of the indices
-does not change, so if $a<b$, then $c(a)<c(b)$.
-This allows us to conveniently perform queries
-even if the indices are compressed.
+La idea es reemplazar cada índice original $x$
+con $c(x)$ donde $c$ es una función que
+comprime los índices.
+Requerimos que el orden de los índices
+no cambie, así que si $a<b$, entonces $c(a)<c(b)$.
+Esto nos permite realizar consultas cómodamente
+aunque los índices estén comprimidos.
 
-For example, if the original indices are
-$555$, $10^9$ and $8$, the new indices are:
+Por ejemplo, si los índices originales son
+$555$, $10^9$ y $8$, los nuevos índices son:
 
 \[
 \begin{array}{lcl}
@@ -1270,29 +1269,29 @@ c(10^9) & = & 3 \\
 \end{array}
 \]
 
-\subsubsection{Range updates}
+\subsubsection{Actualizaciones de rango}
 
-So far, we have implemented data structures
-that support range queries and updates
-of single values.
-Let us now consider an opposite situation,
-where we should update ranges and
-retrieve single values.
-We focus on an operation that increases all
-elements in a range $[a,b]$ by $x$.
+Hasta ahora, hemos implementado estructuras de datos
+que admiten consultas de rango y actualizaciones
+de valores individuales.
+Consideremos ahora una situación opuesta,
+donde debemos actualizar rangos y
+recuperar valores individuales.
+Nos centramos en una operación que incrementa todos
+los elementos de un rango $[a,b]$ en $x$.
 
-\index{difference array}
+\index{arreglo de diferencias}
 
-Surprisingly, we can use the data structures
-presented in this chapter also in this situation.
-To do this, we build a \key{difference array}
-whose values indicate
-the differences between consecutive values
-in the original array.
-Thus, the original array is the
-prefix sum array of the
-difference array.
-For example, consider the following array:
+Sorprendentemente, podemos usar las estructuras de datos
+presentadas en este capítulo también en esta situación.
+Para hacer esto, construimos un \key{arreglo de diferencias}
+cuyos valores indican
+las diferencias entre valores consecutivos
+del arreglo original.
+Así, el arreglo original es el
+arreglo de sumas de prefijos del
+arreglo de diferencias.
+Por ejemplo, considera el siguiente arreglo:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -1320,7 +1319,7 @@ For example, consider the following array:
 \end{tikzpicture}
 \end{center}
 
-The difference array for the above array is as follows:
+El arreglo de diferencias para el arreglo anterior es el siguiente:
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (8,1);
@@ -1347,20 +1346,20 @@ The difference array for the above array is as follows:
 \end{tikzpicture}
 \end{center}
 
-For example, the value 2 at position 6 in the original array
-corresponds to the sum $3-2+4-3=2$ in the difference array.
+Por ejemplo, el valor 2 en la posición 6 del arreglo original
+corresponde a la suma $3-2+4-3=2$ en el arreglo de diferencias.
 
-The advantage of the difference array is
-that we can update a range
-in the original array by changing just
-two elements in the difference array.
-For example, if we want to 
-increase the original array 
-values between positions 1 and 4 by 5,
-it suffices to increase the
-difference array value at position 1 by 5
-and decrease the value at position 5 by 5.
-The result is as follows:
+La ventaja del arreglo de diferencias es
+que podemos actualizar un rango
+en el arreglo original cambiando solo
+dos elementos en el arreglo de diferencias.
+Por ejemplo, si queremos
+incrementar en 5 los valores del arreglo original
+entre las posiciones 1 y 4,
+basta con incrementar el
+valor del arreglo de diferencias en la posición 1 en 5
+y disminuir el valor en la posición 5 en 5.
+El resultado es el siguiente:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -1387,17 +1386,14 @@ The result is as follows:
 \end{tikzpicture}
 \end{center}
 
-More generally, to increase the values
-in range $[a,b]$ by $x$,
-we increase the value at position $a$ by $x$
-and decrease the value at position $b+1$ by $x$.
-Thus, it is only needed to update single values
-and process sum queries,
-so we can use a binary indexed tree or a segment tree.
+Más en general, para incrementar los valores
+en el rango $[a,b]$ en $x$,
+incrementamos el valor en la posición $a$ en $x$
+y disminuimos el valor en la posición $b+1$ en $x$.
+Así, solo se necesita actualizar valores individuales
+y procesar consultas de suma,
+por lo que podemos usar un árbol indexado binario o un árbol de segmentos.
 
-A more difficult problem is to support both
-range queries and range updates.
-In Chapter 28 we will see that even this is possible.
-
-
-
+Un problema más difícil es admitir tanto
+consultas de rango como actualizaciones de rango.
+En el Capítulo 28 veremos que incluso esto es posible.

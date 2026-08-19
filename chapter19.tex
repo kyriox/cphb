@@ -1,33 +1,33 @@
-\chapter{Paths and circuits}
+\chapter{Caminos y circuitos}
 
-This chapter focuses on two types of paths in graphs:
+Este capítulo se centra en dos tipos de caminos en grafos:
 \begin{itemize}
-\item An \key{Eulerian path} is a path that
-goes through each edge exactly once.
-\item A \key{Hamiltonian path} is a path
-that visits each node exactly once.
+\item Un \key{camino euleriano} es un camino que
+pasa por cada arista exactamente una vez.
+\item Un \key{camino hamiltoniano} es un camino
+que visita cada nodo exactamente una vez.
 \end{itemize}
 
-While Eulerian and Hamiltonian paths look like
-similar concepts at first glance,
-the computational problems related to them
-are very different.
-It turns out that there is a simple rule that
-determines whether a graph contains an Eulerian path,
-and there is also an efficient algorithm to
-find such a path if it exists.
-On the contrary, checking the existence of a Hamiltonian path is a NP-hard
-problem, and no efficient algorithm is known for solving the problem.
+Aunque los caminos eulerianos y hamiltonianos parecen
+conceptos similares a primera vista,
+los problemas computacionales relacionados con ellos
+son muy diferentes.
+Resulta que hay una regla sencilla que
+determina si un grafo contiene un camino euleriano,
+y también existe un algoritmo eficiente para
+encontrar tal camino si existe.
+Por el contrario, comprobar la existencia de un camino hamiltoniano es un problema
+NP-difícil, y no se conoce ningún algoritmo eficiente para resolverlo.
 
-\section{Eulerian paths}
+\section{Caminos eulerianos}
 
-\index{Eulerian path}
+\index{camino euleriano}
 
-An \key{Eulerian path}\footnote{L. Euler studied such paths in 1736
-when he solved the famous Königsberg bridge problem.
-This was the birth of graph theory.} is a path
-that goes exactly once through each edge of the graph.
-For example, the graph
+Un \key{camino euleriano}\footnote{L. Euler estudió tales caminos en 1736
+cuando resolvió el famoso problema de los puentes de Königsberg.
+Este fue el nacimiento de la teoría de grafos.} es un camino
+que pasa exactamente una vez por cada arista del grafo.
+Por ejemplo, el grafo
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -44,7 +44,7 @@ For example, the graph
 \path[draw,thick,-] (4) -- (5);
 \end{tikzpicture}
 \end{center}
-has an Eulerian path from node 2 to node 5:
+tiene un camino euleriano desde el nodo 2 hasta el nodo 5:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -68,11 +68,11 @@ has an Eulerian path from node 2 to node 5:
 \path[draw=red,thick,->,line width=2pt] (3) -- node[font=\small,label={[red]south:6.}] {} (5);
 \end{tikzpicture}
 \end{center}
-\index{Eulerian circuit}
-An \key{Eulerian circuit}
-is an Eulerian path that starts and ends
-at the same node.
-For example, the graph
+\index{circuito euleriano}
+Un \key{circuito euleriano}
+es un camino euleriano que comienza y termina
+en el mismo nodo.
+Por ejemplo, el grafo
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -89,7 +89,7 @@ For example, the graph
 \path[draw,thick,-] (2) -- (4);
 \end{tikzpicture}
 \end{center}
-has an Eulerian circuit that starts and ends at node 1:
+tiene un circuito euleriano que comienza y termina en el nodo 1:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -114,25 +114,25 @@ has an Eulerian circuit that starts and ends at node 1:
 \end{tikzpicture}
 \end{center}
 
-\subsubsection{Existence}
+\subsubsection{Existencia}
 
-The existence of Eulerian paths and circuits
-depends on the degrees of the nodes.
-First, an undirected graph has an Eulerian path 
-exactly when all the edges
-belong to the same connected component and
+La existencia de caminos y circuitos eulerianos
+depende de los grados de los nodos.
+Primero, un grafo no dirigido tiene un camino euleriano
+exactamente cuando todas las aristas
+pertenecen a la misma componente conexa y
 \begin{itemize}
-\item the degree of each node is even \emph{or}
-\item the degree of exactly two nodes is odd,
-and the degree of all other nodes is even.
+\item el grado de cada nodo es par \emph{o}
+\item el grado de exactamente dos nodos es impar,
+y el grado de todos los demás nodos es par.
 \end{itemize}
 
-In the first case, each Eulerian path is also an Eulerian circuit.
-In the second case, the odd-degree nodes are the starting
-and ending nodes of an Eulerian path which is not an Eulerian circuit.
+En el primer caso, cada camino euleriano es también un circuito euleriano.
+En el segundo caso, los nodos de grado impar son los nodos inicial
+y final de un camino euleriano que no es un circuito euleriano.
 
 \begin{samepage}
-For example, in the graph
+Por ejemplo, en el grafo
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -150,32 +150,32 @@ For example, in the graph
 \end{tikzpicture}
 \end{center}
 \end{samepage}
-nodes 1, 3 and 4 have a degree of 2,
-and nodes 2 and 5 have a degree of 3.
-Exactly two nodes have an odd degree,
-so there is an Eulerian path between nodes 2 and 5,
-but the graph does not contain an Eulerian circuit.
+los nodos 1, 3 y 4 tienen grado 2,
+y los nodos 2 y 5 tienen grado 3.
+Exactamente dos nodos tienen grado impar,
+así que hay un camino euleriano entre los nodos 2 y 5,
+pero el grafo no contiene un circuito euleriano.
 
-In a directed graph,
-we focus on indegrees and outdegrees
-of the nodes.
-A directed graph contains an Eulerian path
-exactly when all the edges belong to the same
-connected component and
+En un grafo dirigido,
+nos centramos en los grados de entrada y de salida
+de los nodos.
+Un grafo dirigido contiene un camino euleriano
+exactamente cuando todas las aristas pertenecen a la misma
+componente conexa y
 \begin{itemize}
-\item in each node, the indegree equals the outdegree, \emph{or}
-\item in one node, the indegree is one larger than the outdegree,
-in another node, the outdegree is one larger than the indegree,
-and in all other nodes, the indegree equals the outdegree.
+\item en cada nodo, el grado de entrada es igual al grado de salida, \emph{o}
+\item en un nodo, el grado de entrada es uno mayor que el grado de salida,
+en otro nodo, el grado de salida es uno mayor que el grado de entrada,
+y en todos los demás nodos, el grado de entrada es igual al grado de salida.
 \end{itemize}
 
-In the first case, each Eulerian path
-is also an Eulerian circuit,
-and in the second case, the graph contains an Eulerian path
-that begins at the node whose outdegree is larger
-and ends at the node whose indegree is larger.
+En el primer caso, cada camino euleriano
+es también un circuito euleriano,
+y en el segundo caso, el grafo contiene un camino euleriano
+que comienza en el nodo cuyo grado de salida es mayor
+y termina en el nodo cuyo grado de entrada es mayor.
 
-For example, in the graph
+Por ejemplo, en el grafo
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -192,11 +192,11 @@ For example, in the graph
 \path[draw,thick,->,>=latex] (5) -- (4);
 \end{tikzpicture}
 \end{center}
-nodes 1, 3 and 4 have both indegree 1 and outdegree 1,
-node 2 has indegree 1 and outdegree 2,
-and node 5 has indegree 2 and outdegree 1.
-Hence, the graph contains an Eulerian path
-from node 2 to node 5:
+los nodos 1, 3 y 4 tienen grado de entrada 1 y grado de salida 1,
+el nodo 2 tiene grado de entrada 1 y grado de salida 2,
+y el nodo 5 tiene grado de entrada 2 y grado de salida 1.
+Por tanto, el grafo contiene un camino euleriano
+desde el nodo 2 hasta el nodo 5:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -221,52 +221,52 @@ from node 2 to node 5:
 \end{tikzpicture}
 \end{center}
 
-\subsubsection{Hierholzer's algorithm}
+\subsubsection{Algoritmo de Hierholzer}
 
-\index{Hierholzer's algorithm}
+\index{algoritmo de Hierholzer}
 
-\key{Hierholzer's algorithm}\footnote{The algorithm was published
-in 1873 after Hierholzer's death \cite{hie73}.} is an efficient
-method for constructing
-an Eulerian circuit.
-The algorithm consists of several rounds,
-each of which adds new edges to the circuit.
-Of course, we assume that the graph contains
-an Eulerian circuit; otherwise Hierholzer's
-algorithm cannot find it.
+El \key{algoritmo de Hierholzer}\footnote{El algoritmo se publicó
+en 1873 tras la muerte de Hierholzer \cite{hie73}.} es un método
+eficiente para construir
+un circuito euleriano.
+El algoritmo consta de varias rondas,
+cada una de las cuales añade nuevas aristas al circuito.
+Por supuesto, suponemos que el grafo contiene
+un circuito euleriano; de lo contrario, el algoritmo de Hierholzer
+no puede encontrarlo.
 
-First, the algorithm constructs a circuit that contains
-some (not necessarily all) of the edges of the graph.
-After this, the algorithm extends the circuit
-step by step by adding subcircuits to it.
-The process continues until all edges have been added
-to the circuit.
+Primero, el algoritmo construye un circuito que contiene
+algunas (no necesariamente todas) de las aristas del grafo.
+Después de esto, el algoritmo extiende el circuito
+paso a paso añadiéndole subcircuitos.
+El proceso continúa hasta que todas las aristas han sido añadidas
+al circuito.
 
-The algorithm extends the circuit by always finding
-a node $x$ that belongs to the circuit but has
-an outgoing edge that is not included in the circuit.
-The algorithm constructs a new path from node $x$
-that only contains edges that are not yet in the circuit.
-Sooner or later,
-the path will return to node $x$,
-which creates a subcircuit.
+El algoritmo extiende el circuito encontrando siempre
+un nodo $x$ que pertenece al circuito pero que tiene
+una arista saliente que no está incluida en el circuito.
+El algoritmo construye un nuevo camino desde el nodo $x$
+que solo contiene aristas que aún no están en el circuito.
+Tarde o temprano,
+el camino regresará al nodo $x$,
+lo que crea un subcircuito.
 
-If the graph only contains an Eulerian path,
-we can still use Hierholzer's algorithm
-to find it by adding an extra edge to the graph
-and removing the edge after the circuit
-has been constructed.
-For example, in an undirected graph,
-we add the extra edge between the two
-odd-degree nodes.
+Si el grafo solo contiene un camino euleriano,
+todavía podemos usar el algoritmo de Hierholzer
+para encontrarlo añadiendo una arista extra al grafo
+y eliminando la arista después de que el circuito
+haya sido construido.
+Por ejemplo, en un grafo no dirigido,
+añadimos la arista extra entre los dos
+nodos de grado impar.
 
-Next we will see how Hierholzer's algorithm
-constructs an Eulerian circuit for an undirected graph.
+A continuación veremos cómo el algoritmo de Hierholzer
+construye un circuito euleriano para un grafo no dirigido.
 
-\subsubsection{Example}
+\subsubsection{Ejemplo}
 
 \begin{samepage}
-Let us consider the following graph:
+Consideremos el siguiente grafo:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (3,5) {$1$};
@@ -292,9 +292,9 @@ Let us consider the following graph:
 \end{samepage}
 
 \begin{samepage}
-Suppose that the algorithm first creates a circuit
-that begins at node 1.
-A possible circuit is
+Supongamos que el algoritmo primero crea un circuito
+que comienza en el nodo 1.
+Un posible circuito es
 $1 \rightarrow 2 \rightarrow 3 \rightarrow 1$:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
@@ -323,10 +323,10 @@ $1 \rightarrow 2 \rightarrow 3 \rightarrow 1$:
 \end{tikzpicture}
 \end{center}
 \end{samepage}
-After this, the algorithm adds
-the subcircuit
+Después de esto, el algoritmo añade
+el subcircuito
 $2 \rightarrow 5 \rightarrow 6 \rightarrow 2$
-to the circuit:
+al circuito:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (3,5) {$1$};
@@ -356,9 +356,9 @@ to the circuit:
 \path[draw=red,thick,->,line width=2pt] (3) -- node[font=\small,label={[red]east:6.}] {} (1);
 \end{tikzpicture}
 \end{center}
-Finally, the algorithm adds the subcircuit
+Finalmente, el algoritmo añade el subcircuito
 $6 \rightarrow 3 \rightarrow 4 \rightarrow 7 \rightarrow 6$
-to the circuit:
+al circuito:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (3,5) {$1$};
@@ -392,18 +392,18 @@ to the circuit:
 \path[draw=red,thick,->,line width=2pt] (3) -- node[font=\small,label={[red]east:10.}] {} (1);
 \end{tikzpicture}
 \end{center}
-Now all edges are included in the circuit,
-so we have successfully constructed an Eulerian circuit.
+Ahora todas las aristas están incluidas en el circuito,
+así que hemos construido con éxito un circuito euleriano.
 
-\section{Hamiltonian paths}
+\section{Caminos hamiltonianos}
 
-\index{Hamiltonian path}
+\index{camino hamiltoniano}
 
-A \key{Hamiltonian path}
+Un \key{camino hamiltoniano}
 %\footnote{W. R. Hamilton (1805--1865) was an Irish mathematician.}
-is a path
-that visits each node of the graph exactly once.
-For example, the graph
+es un camino
+que visita cada nodo del grafo exactamente una vez.
+Por ejemplo, el grafo
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -420,7 +420,7 @@ For example, the graph
 \path[draw,thick,-] (4) -- (5);
 \end{tikzpicture}
 \end{center}
-contains a Hamiltonian path from node 1 to node 3:
+contiene un camino hamiltoniano desde el nodo 1 hasta el nodo 3:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -443,12 +443,12 @@ contains a Hamiltonian path from node 1 to node 3:
 \end{tikzpicture}
 \end{center}
 
-\index{Hamiltonian circuit}
+\index{circuito hamiltoniano}
 
-If a Hamiltonian path begins and ends at the same node,
-it is called a \key{Hamiltonian circuit}.
-The graph above also has an Hamiltonian circuit
-that begins and ends at node 1:
+Si un camino hamiltoniano comienza y termina en el mismo nodo,
+se llama \key{circuito hamiltoniano}.
+El grafo anterior también tiene un circuito hamiltoniano
+que comienza y termina en el nodo 1:
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
 \node[draw, circle] (1) at (1,5) {$1$};
@@ -472,86 +472,86 @@ that begins and ends at node 1:
 \end{tikzpicture}
 \end{center}
 
-\subsubsection{Existence}
+\subsubsection{Existencia}
 
-No efficient method is known for testing if a graph
-contains a Hamiltonian path, and the problem is NP-hard.
-Still, in some special cases, we can be certain
-that a graph contains a Hamiltonian path.
+No se conoce ningún método eficiente para comprobar si un grafo
+contiene un camino hamiltoniano, y el problema es NP-difícil.
+Aun así, en algunos casos especiales, podemos estar seguros
+de que un grafo contiene un camino hamiltoniano.
 
-A simple observation is that if the graph is complete,
-i.e., there is an edge between all pairs of nodes,
-it also contains a Hamiltonian path.
-Also stronger results have been achieved:
+Una observación sencilla es que si el grafo es completo,
+es decir, hay una arista entre todos los pares de nodos,
+también contiene un camino hamiltoniano.
+También se han obtenido resultados más fuertes:
 
 \begin{itemize}
 \item
-\index{Dirac's theorem}
-\key{Dirac's theorem}: %\cite{dir52}
-If the degree of each node is at least $n/2$,
-the graph contains a Hamiltonian path.
+\index{teorema de Dirac}
+\key{Teorema de Dirac}: %\cite{dir52}
+Si el grado de cada nodo es al menos $n/2$,
+el grafo contiene un camino hamiltoniano.
 \item
-\index{Ore's theorem}
-\key{Ore's theorem}: %\cite{ore60}
-If the sum of degrees of each non-adjacent pair of nodes
-is at least $n$,
-the graph contains a Hamiltonian path.
+\index{teorema de Ore}
+\key{Teorema de Ore}: %\cite{ore60}
+Si la suma de los grados de cada par de nodos no adyacentes
+es al menos $n$,
+el grafo contiene un camino hamiltoniano.
 \end{itemize}
 
-A common property in these theorems and other results is
-that they guarantee the existence of a Hamiltonian path
-if the graph has \emph{a large number} of edges.
-This makes sense, because the more edges the graph contains,
-the more possibilities there is to construct a Hamiltonian path.
+Una propiedad común en estos teoremas y otros resultados es
+que garantizan la existencia de un camino hamiltoniano
+si el grafo tiene \emph{un gran número} de aristas.
+Esto tiene sentido, porque cuantas más aristas contiene el grafo,
+más posibilidades hay de construir un camino hamiltoniano.
 
-\subsubsection{Construction}
+\subsubsection{Construcción}
 
-Since there is no efficient way to check if a Hamiltonian
-path exists, it is clear that there is also no method
-to efficiently construct the path, because otherwise
-we could just try to construct the path and see
-whether it exists.
+Dado que no hay una forma eficiente de comprobar si existe un camino
+hamiltoniano, está claro que tampoco hay un método
+para construir eficientemente el camino, porque de lo contrario
+podríamos simplemente intentar construir el camino y ver
+si existe.
 
-A simple way to search for a Hamiltonian path is
-to use a backtracking algorithm that goes through all
-possible ways to construct the path.
-The time complexity of such an algorithm is at least $O(n!)$,
-because there are $n!$ different ways to choose the order of $n$ nodes.
+Una forma sencilla de buscar un camino hamiltoniano es
+usar un algoritmo de vuelta atrás que recorre todas
+las formas posibles de construir el camino.
+La complejidad temporal de tal algoritmo es al menos $O(n!)$,
+porque hay $n!$ formas diferentes de elegir el orden de $n$ nodos.
 
-A more efficient solution is based on dynamic programming
-(see Chapter 10.5).
-The idea is to calculate values
-of a function $\texttt{possible}(S,x)$,
-where $S$ is a subset of nodes and $x$
-is one of the nodes.
-The function indicates whether there is a Hamiltonian path
-that visits the nodes of $S$ and ends at node $x$.
-It is possible to implement this solution in $O(2^n n^2)$ time.
+Una solución más eficiente se basa en la programación dinámica
+(véase el capítulo 10.5).
+La idea es calcular los valores
+de una función $\texttt{possible}(S,x)$,
+donde $S$ es un subconjunto de nodos y $x$
+es uno de los nodos.
+La función indica si hay un camino hamiltoniano
+que visita los nodos de $S$ y termina en el nodo $x$.
+Es posible implementar esta solución en tiempo $O(2^n n^2)$.
 
-\section{De Bruijn sequences}
+\section{Secuencias de De Bruijn}
 
-\index{De Bruijn sequence}
+\index{secuencia de De Bruijn}
 
-A \key{De Bruijn sequence}
-is a string that contains
-every string of length $n$
-exactly once as a substring, for a fixed
-alphabet of $k$ characters.
-The length of such a string is 
-$k^n+n-1$ characters.
-For example, when $n=3$ and $k=2$,
-an example of a De Bruijn sequence is
+Una \key{secuencia de De Bruijn}
+es una cadena que contiene
+cada cadena de longitud $n$
+exactamente una vez como subcadena, para un alfabeto
+fijo de $k$ caracteres.
+La longitud de tal cadena es
+$k^n+n-1$ caracteres.
+Por ejemplo, cuando $n=3$ y $k=2$,
+un ejemplo de secuencia de De Bruijn es
 \[0001011100.\]
-The substrings of this string are all
-combinations of three bits:
-000, 001, 010, 011, 100, 101, 110 and 111.
+Las subcadenas de esta cadena son todas
+las combinaciones de tres bits:
+000, 001, 010, 011, 100, 101, 110 y 111.
 
-It turns out that each De Bruijn sequence
-corresponds to an Eulerian path in a graph.
-The idea is to construct a graph where
-each node contains a string of $n-1$ characters
-and each edge adds one character to the string.
-The following graph corresponds to the above scenario:
+Resulta que cada secuencia de De Bruijn
+corresponde a un camino euleriano en un grafo.
+La idea es construir un grafo donde
+cada nodo contiene una cadena de $n-1$ caracteres
+y cada arista añade un carácter a la cadena.
+El siguiente grafo corresponde al escenario anterior:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.8]
@@ -573,27 +573,27 @@ The following graph corresponds to the above scenario:
 \end{tikzpicture}
 \end{center}
 
-An Eulerian path in this graph corresponds to a string
-that contains all strings of length $n$.
-The string contains the characters of the starting node
-and all characters of the edges.
-The starting node has $n-1$ characters
-and there are $k^n$ characters in the edges,
-so the length of the string is $k^n+n-1$.
+Un camino euleriano en este grafo corresponde a una cadena
+que contiene todas las cadenas de longitud $n$.
+La cadena contiene los caracteres del nodo inicial
+y todos los caracteres de las aristas.
+El nodo inicial tiene $n-1$ caracteres
+y hay $k^n$ caracteres en las aristas,
+así que la longitud de la cadena es $k^n+n-1$.
 
-\section{Knight's tours}
+\section{Recorridos del caballo}
 
-\index{knight's tour}
+\index{recorrido del caballo}
 
-A \key{knight's tour} is a sequence of moves
-of a knight on an $n \times n$ chessboard
-following the rules of chess such that the knight
-visits each square exactly once.
-A knight's tour is called a \emph{closed} tour
-if the knight finally returns to the starting square and
-otherwise it is called an \emph{open} tour.
+Un \key{recorrido del caballo} es una secuencia de movimientos
+de un caballo en un tablero de ajedrez de $n \times n$
+siguiendo las reglas del ajedrez de modo que el caballo
+visite cada casilla exactamente una vez.
+Un recorrido del caballo se llama recorrido \emph{cerrado}
+si el caballo finalmente regresa a la casilla inicial y
+en caso contrario se llama recorrido \emph{abierto}.
 
-For example, here is an open knight's tour on a $5 \times 5$ board:
+Por ejemplo, aquí hay un recorrido del caballo abierto en un tablero de $5 \times 5$:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
@@ -626,34 +626,34 @@ For example, here is an open knight's tour on a $5 \times 5$ board:
 \end{tikzpicture}
 \end{center}
 
-A knight's tour corresponds to a Hamiltonian path in a graph
-whose nodes represent the squares of the board,
-and two nodes are connected with an edge if a knight
-can move between the squares according to the rules of chess.
+Un recorrido del caballo corresponde a un camino hamiltoniano en un grafo
+cuyos nodos representan las casillas del tablero,
+y dos nodos están conectados con una arista si un caballo
+puede moverse entre las casillas según las reglas del ajedrez.
 
-A natural way to construct a knight's tour is to use backtracking.
-The search can be made more efficient by using
-\emph{heuristics} that attempt to guide the knight so that
-a complete tour will be found quickly.
+Una forma natural de construir un recorrido del caballo es usar vuelta atrás.
+La búsqueda se puede hacer más eficiente usando
+\emph{heurísticas} que intentan guiar al caballo de modo que
+se encuentre rápidamente un recorrido completo.
 
-\subsubsection{Warnsdorf's rule}
+\subsubsection{Regla de Warnsdorf}
 
-\index{heuristic}
-\index{Warnsdorf's rule}
+\index{heurística}
+\index{regla de Warnsdorf}
 
-\key{Warnsdorf's rule} is a simple and effective heuristic
-for finding a knight's tour\footnote{This heuristic was proposed
-in Warnsdorf's book \cite{war23} in 1823. There are
-also polynomial algorithms for finding knight's tours
-\cite{par97}, but they are more complicated.}.
-Using the rule, it is possible to efficiently construct a tour
-even on a large board.
-The idea is to always move the knight so that it ends up
-in a square where the number of possible moves is as
-\emph{small} as possible.
+La \key{regla de Warnsdorf} es una heurística sencilla y eficaz
+para encontrar un recorrido del caballo\footnote{Esta heurística fue propuesta
+en el libro de Warnsdorf \cite{war23} en 1823. También hay
+algoritmos polinómicos para encontrar recorridos del caballo
+\cite{par97}, pero son más complicados.}.
+Usando la regla, es posible construir eficientemente un recorrido
+incluso en un tablero grande.
+La idea es mover siempre el caballo de modo que termine
+en una casilla donde el número de movimientos posibles sea lo más
+\emph{pequeño} posible.
 
-For example, in the following situation, there are five
-possible squares to which the knight can move (squares $a \ldots e$):
+Por ejemplo, en la siguiente situación, hay cinco
+casillas posibles a las que el caballo puede moverse (casillas $a \ldots e$):
 \begin{center}
 \begin{tikzpicture}[scale=0.7]
 \draw (0,0) grid (5,5);
@@ -666,9 +666,8 @@ possible squares to which the knight can move (squares $a \ldots e$):
 \node at (3.5,1.5) {$d$};
 \end{tikzpicture}
 \end{center}
-In this situation, Warnsdorf's rule moves the knight to square $a$,
-because after this choice, there is only a single possible move.
-The other choices would move the knight to squares where
-there would be three moves available.
-
+En esta situación, la regla de Warnsdorf mueve el caballo a la casilla $a$,
+porque después de esta elección, solo hay un único movimiento posible.
+Las otras elecciones moverían el caballo a casillas donde
+habría tres movimientos disponibles.
 
